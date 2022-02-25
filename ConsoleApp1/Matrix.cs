@@ -48,6 +48,8 @@ namespace ConsoleApp1
                 }
             }
         }
+
+       
         //needs work
         public Matrix(Matrix other)
         {
@@ -79,6 +81,22 @@ namespace ConsoleApp1
                 }
             }
         }
+         public void FillVertically(params float[] data)
+        {
+            int datasize = data.Length;
+            int count = 0;
+            while (count < datasize)
+            {
+                for (int m = 0; m < col; m++)
+                {
+                    for (int j = 0; j < row; j++)
+                    {
+                         matrixData[j,m] = data[count];
+                         count++;
+                    }
+                }
+            }
+        }
 
         public override string ToString()
         {
@@ -94,10 +112,21 @@ namespace ConsoleApp1
 
             return str;
         }
+
       
-        public static float operator *(Matrix a, Matrix b)
+        public static float operator * (Matrix a, Matrix b)
         {
             return Matrix.DotProductValue(a, b);
+        }
+        public static Matrix operator +(Matrix a, Matrix b)
+        {
+            return Matrix.Concatenation(a, b);
+        }
+        public static Matrix ToMatrix(float x)
+        {
+            Matrix temp = new Matrix(1,1);
+            temp.matrixData[0, 0] = x;
+            return temp;
         }
 
         public static Matrix Sigmoid(Matrix x)
@@ -113,7 +142,7 @@ namespace ConsoleApp1
 
             return temp;
         }
-
+      
         public static Matrix Tanh(Matrix x)
         {
             Matrix temp = new Matrix(x.row, x.col);
@@ -161,7 +190,6 @@ namespace ConsoleApp1
        
         public static Matrix HadmardProduct(Matrix x, Matrix y)
         {
-            //cannot work after concatenation 
             if (x.row != y.row || x.col != y.col)
             {
                 throw new Exception("Cannot compute Hadamard product, dimensions do not match:\n");
@@ -183,8 +211,7 @@ namespace ConsoleApp1
         //dot product that returns the matrix
         //needs work
         public static Matrix DotProductMatrix(Matrix x, Matrix y)
-        {
-            Console.WriteLine(x.col + "fooooooooooooooooooooooood       " + y.row);
+        {          
             if (x.col != y.row)
             {
                 throw new Exception("Cannot compute Dot product, dimensions do not match:\n");
@@ -202,9 +229,7 @@ namespace ConsoleApp1
                 Console.WriteLine("i"+i);
                 for (int j = 0; j < temp.col; j++)
                 {
-
                     Console.WriteLine("j"+j);
-
                 }
 
             }
