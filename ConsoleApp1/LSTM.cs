@@ -9,14 +9,19 @@ namespace ConsoleApp1
     public class LSTM
     {
         public Matrix [] x;
-
-        public Matrix w = new Matrix (4,1);
+        public Matrix [] w;
+     
         public Matrix wo, wa, wi, wf;
-            
-           
-        //given
+
+        public Matrix u = new Matrix(1, 4);
         public float uo, ua, ui, uf;
+
         public float bo, ba, bi, bf;
+
+        //backward values 
+        float[] dOut;
+        float[] ObservedOut;
+                           
 
         public struct lstm
         {
@@ -35,7 +40,7 @@ namespace ConsoleApp1
             I[0].Out = 0;
             I[0].State = 0;
         }
-        public void SetValues ()
+        public void SetValues (int t)
         {
             //needs to be changed
             x = new Matrix[2];
@@ -62,16 +67,21 @@ namespace ConsoleApp1
             wi = new Matrix(1, 2, fwi);
             wf = new Matrix(1, 2, fwf);
             wo = new Matrix(1, 2, fwo);
-            -
+            
             // Matrix of Ws of a,i,f,o
-            w = new Matrix(2, 4);
-            w.FillVertically(fw);
-            Console.WriteLine(w.ToString());
+            //make it the last value of input
+            w[1]= new Matrix (2,4,fw);
             
             ua = .15f; ui = .8f; uf = .1f; uo = .25f;
+            float[] fu = new float[] {ua,ui,uf,uo};
+            u.Fill(fu);
+
             ba = .2f; bi = .65f; bf = .15f; bo = .1f;
             //string a = 1;
-            float[] inputb = new float[] { 7, 8, 9, 10, 11, 12 };
+            
+            //backwards
+            ObservedOut = new float[2] {.5f,1.25f};
+            dOut = new float[t+1];//needs to demonstrate -1
         }
         public void forward(int t)
         {
@@ -98,36 +108,56 @@ namespace ConsoleApp1
         }
 
         public void backward(int t)
-        {
-            float dOut, dt, dA, dI, dF, dO, dX;
+        {            
+            float dt;
+            Matrix dx;
             float[] dG = new float[4];
-            //Matrix.ToMatrix
-            float ObservedOut = 1.25f;            
-            dt = I[t].Out - ObservedOut; //linear
-            dOut = dt + 0;///wahhh
 
-            I[t].dState = dOut * I[t].o * (1 - Tanh2(I[t].State)) + (1 - Tanh2(I[t + 1].dState)) * I[t + 1].f;
+            dt = I[t].Out - ObservedOut[t]; //linear
+                        Console.WriteLine("\nlalala "+dOut[t]);
+
+            if (dOut[t+1]==0) dOut[t+1] = dt + dOut[t+1];
+                        Console.WriteLine("lalala "+dOut[t+1]);
+
+            I[t].dState = dOut[t+1] * I[t].o * (1 - Tanh2(I[t].State)) + (1 - Tanh2(I[t + 1].dState)) * I[t + 1].f;
            
+            //GATES
             //a
-            dG[0] = (float)(I[t].dState * I[t].i * (1 - Math.Pow(I[t].a, 2)));
+            dG[0] = (float)(I[t].dState * I[t].i * (1 - Math.Pow(I[t].a, 2)));                
             //i
             dG[1] = I[t].dState * I[t].a * I[t].i * (1 - I[t].i);
             //f
-            dG[2] = I[t].dState * I[t-1].State * I[t].f * (1 - I[t].f);
+            if (t== 0) dG[2] = I[t].dState * I[0].State * I[t].f * (1 - I[t].f);
+            else dG[2] = I[t].dState * I[t - 1].State * I[t].f * (1 - I[t].f);
             //o
-            dG[3] = dOut * Tanh(I[t].State) * I[t].o * (1 - I[t].o);
-
-
-
+            dG[3] = dOut[t+1] * Tanh(I[t].State) * I[t].o * (1 - I[t].o);
             Matrix dGates = new Matrix(4, 1, dG);
 
-            Console.WriteLine($"Backwards {t}: dt {dt}, dOut {dOut}, F { I[t].dState}, dGates {dGates.ToString()}, State {I[t].State}, Out {I[t].Out}");
+            //update w vector
+            //updating u vector
+            //updating b vector;';;;
+            //learning rate
 
+
+            dx = Matrix.DotProductMatrix( w[t],dGates);
+            //wTemp = Matrix.OuterProduct(dGates,x[t]);
+
+           
+           dOut[t] = u * dGates;//out t-1
+            Console.WriteLine($"\n\nBackwards {t}: dt {dt}, dOut {dOut[t+1]}, F { I[t].dState},\n dGates: \n{dGates.ToString()} dx: \n{dx}dOut-1 {dOut[t]} ");
+        
+            t -= 1;
+            for (int i = t; i >= 0; i--)
+			{
+                backward(i);
+			}
         }
+
+        
         public void Run(int t)
         {
             Initialization();
-            SetValues();
+            SetValues(2);
             for (int i = 0; i <= t; i++)
             {
                 forward(i);
