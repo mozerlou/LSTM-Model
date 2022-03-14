@@ -29,7 +29,6 @@ namespace ConsoleApp1
             {
                 throw new Exception($"Invalid Number of Rows or Columns in Matrix");
             }
-
             this.col = c;
             this.row = r;
             matrixData = new float[row, col];
@@ -305,11 +304,10 @@ namespace ConsoleApp1
                 throw new Exception("Cannot compute Outer product product, wrong input:\n");
             }
 
-            Matrix temp = new Matrix(x.matrixData.Length, y.matrixData.Length);
-            Console.WriteLine(temp.ToString()); 
-            Matrix Xtemp = x;
+            Matrix temp = new Matrix(y.matrixData.Length, x.matrixData.Length);
+            Matrix Xtemp = y;
                 
-            Matrix Ytemp = y;
+            Matrix Ytemp = x;
             //switching size to rx1
             if(x.col != 1)
             { 
@@ -321,7 +319,6 @@ namespace ConsoleApp1
 			         {        
                         Xtemp.matrixData[count, 0] = x.matrixData[i,j];
                         count++;
-                        Console.WriteLine(Xtemp.ToString());
 
 			         }
 			    }
@@ -334,11 +331,9 @@ namespace ConsoleApp1
                 for (int i = 0; i < y.row; i++)
 			    {
                      for (int j = 0; j < y.col; j++)
-			         {         Console.WriteLine("h " + y.matrixData[i,j]);
-
+			         {         
                         Ytemp.matrixData[count, 0] = y.matrixData[i,j];
                         count++;
-                        Console.WriteLine(Ytemp.ToString());
 			         }
 			    }
             }

@@ -67,11 +67,16 @@ namespace ConsoleApp1
             wi = new Matrix(1, 2, fwi);
             wf = new Matrix(1, 2, fwf);
             wo = new Matrix(1, 2, fwo);
-            
+
             // Matrix of Ws of a,i,f,o
             //make it the last value of input
-            w[1]= new Matrix (2,4,fw);
-            
+            w = new Matrix [2];
+            for (int i = 0; i < 2; i++)
+            {
+                w[i] = new Matrix(2,4);
+            }
+            w[1].Fill(fw);
+
             ua = .15f; ui = .8f; uf = .1f; uo = .25f;
             float[] fu = new float[] {ua,ui,uf,uo};
             u.Fill(fu);
@@ -114,10 +119,8 @@ namespace ConsoleApp1
             float[] dG = new float[4];
 
             dt = I[t].Out - ObservedOut[t]; //linear
-                        Console.WriteLine("\nlalala "+dOut[t]);
 
             if (dOut[t+1]==0) dOut[t+1] = dt + dOut[t+1];
-                        Console.WriteLine("lalala "+dOut[t+1]);
 
             I[t].dState = dOut[t+1] * I[t].o * (1 - Tanh2(I[t].State)) + (1 - Tanh2(I[t + 1].dState)) * I[t + 1].f;
            
@@ -137,14 +140,14 @@ namespace ConsoleApp1
             //updating u vector
             //updating b vector;';;;
             //learning rate
-
+           Console.WriteLine("w bfo:\n"+w[t]);
 
             dx = Matrix.DotProductMatrix( w[t],dGates);
-            //wTemp = Matrix.OuterProduct(dGates,x[t]);
-
+          //  w[t] = Matrix.OuterProduct(dGates,x[t]);
+            Console.WriteLine("wafter : "+w[t]);
            
            dOut[t] = u * dGates;//out t-1
-            Console.WriteLine($"\n\nBackwards {t}: dt {dt}, dOut {dOut[t+1]}, F { I[t].dState},\n dGates: \n{dGates.ToString()} dx: \n{dx}dOut-1 {dOut[t]} ");
+            Console.WriteLine($"\n\nBackwards {t}: dt {dt}, dOut {dOut[t+1]}, F { I[t].dState},\nGates: \n{dGates.ToString()}dx:\n{dx}dOut-1 {dOut[t]} ");
         
             t -= 1;
             for (int i = t; i >= 0; i--)
@@ -158,11 +161,15 @@ namespace ConsoleApp1
         {
             Initialization();
             SetValues(2);
+            Console.WriteLine("chco");
             for (int i = 0; i <= t; i++)
             {
                 forward(i);
             }
-           // backward(1);
+                        Console.WriteLine("chco");
+
+
+            backward(1);
         }
         
 
