@@ -61,7 +61,7 @@ namespace ConsoleApp1
             float[] fwi = new float[] { 0.95f, 0.8f };
             float[] fwf = new float[] { 0.7f, 0.45f };
             float[] fwo = new float[] { 0.6f, 0.4f };
-            float[] fw = new float[] { 0.45f, 0.25f, 0.95f, 0.8f,  0.7f, 0.45f, 0.6f, 0.4f };
+            float[] fw = new float[] { 0.45f, .95f, 0.70f, 0.6f,  0.25f, 0.8f, 0.45f, 0.4f };
 
             wa = new Matrix(1, 2, fwa);
             wi = new Matrix(1, 2, fwi);
@@ -136,15 +136,16 @@ namespace ConsoleApp1
             dG[3] = dOut[t+1] * Tanh(I[t].State) * I[t].o * (1 - I[t].o);
             Matrix dGates = new Matrix(4, 1, dG);
 
-            //update w vector
             //updating u vector
             //updating b vector;';;;
             //learning rate
-           Console.WriteLine("w bfo:\n"+w[t]);
+          
 
             dx = Matrix.DotProductMatrix( w[t],dGates);
-          //  w[t] = Matrix.OuterProduct(dGates,x[t]);
-            Console.WriteLine("wafter : "+w[t]);
+            //update w vector
+
+            if (t!=0) w[t-1] = Matrix.OuterProduct(dGates,x[t]);
+          
            
            dOut[t] = u * dGates;//out t-1
             Console.WriteLine($"\n\nBackwards {t}: dt {dt}, dOut {dOut[t+1]}, F { I[t].dState},\nGates: \n{dGates.ToString()}dx:\n{dx}dOut-1 {dOut[t]} ");
@@ -161,14 +162,10 @@ namespace ConsoleApp1
         {
             Initialization();
             SetValues(2);
-            Console.WriteLine("chco");
             for (int i = 0; i <= t; i++)
             {
                 forward(i);
             }
-                        Console.WriteLine("chco");
-
-
             backward(1);
         }
         
