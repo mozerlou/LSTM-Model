@@ -209,32 +209,42 @@ namespace ConsoleApp1
 
       
         //dot product that returns the matrix
-        //needs work
         public static Matrix DotProductMatrix(Matrix x, Matrix y)
-        {          
+        {
             if (x.col != y.row)
             {
                 throw new Exception("Cannot compute Dot product, dimensions do not match:\n");
             }
 
-            Matrix RowTemp = new Matrix(x.row, 1);
-            Matrix ColTemp = new Matrix(x.row, 1);
-            Matrix temp = new Matrix(x.row, 1);
+            Matrix RowTemp = new Matrix(x.col, 1);
+            Matrix ColTemp = new Matrix(y.row, 1);
+            Matrix Temp = new Matrix(x.row, y.col);
+            int r = 0;
 
-
-            float value = 0.0f;
-
-            for (int i = 0; i < temp.row; i++)
+            for (int i = 0; i < x.row; i++)
             {
-                Console.WriteLine("i"+i);
-                for (int j = 0; j < temp.col; j++)
+                //Get Matrix x Rows
+                for (int j = 0; j < x.col; j++)
                 {
-                    Console.WriteLine("j"+j);
+                    RowTemp.matrixData[r, 0] = x.matrixData[i, j];
+                    r++;
+                }
+                r = 0;
+                //Gets Matrix y Rows and multiplies by x row
+                for (int m = 0; m < y.col; m++)
+                {
+                    for (int p = 0; p < y.row; p++)
+                    {
+                        ColTemp.matrixData[r, 0] = y.matrixData[p, m];
+                        r++;
+                    }
+                    r = 0;
+                    Temp.matrixData[i, m] = DotProductAssistant(RowTemp, ColTemp);
                 }
 
+                r = 0;
             }
-
-            return temp;
+            return Temp;
         }
 
         //dot product that returns single value
@@ -247,7 +257,6 @@ namespace ConsoleApp1
 
             Matrix RowTemp = new Matrix(x.col, 1);
             Matrix ColTemp = new Matrix(y.row, 1);
-
             float value = 0.0f;
             int r = 0;
 
@@ -269,12 +278,12 @@ namespace ConsoleApp1
                         r++;
                     }
                     r = 0;
+                   
                    value += DotProductAssistant(RowTemp,ColTemp);
                 }
 
                 r = 0; 
             }
-
             return value;
         }
 
@@ -289,10 +298,65 @@ namespace ConsoleApp1
             return temp;
         }
             
-        public static double MOuterProduct(Vector a, Vector b)
+        public static Matrix OuterProduct(Matrix x, Matrix y)
         {
-            return a.x * b.x + a.y * b.y + a.z * b.z;
+            if ( (x.row != 1 && x.col !=1) && (y.row != 1 && y.col!=1) )
+            {
+                throw new Exception("Cannot compute Outer product product, wrong input:\n");
+            }
+
+            Matrix temp = new Matrix(x.matrixData.Length, y.matrixData.Length);
+            Console.WriteLine(temp.ToString()); 
+            Matrix Xtemp = x;
+                
+            Matrix Ytemp = y;
+            //switching size to rx1
+            if(x.col != 1)
+            { 
+                int count = 0;
+                Xtemp = new Matrix (x.col, 1);
+                for (int i = 0; i < x.row; i++)
+			    {
+                     for (int j = 0; j < x.col; j++)
+			         {        
+                        Xtemp.matrixData[count, 0] = x.matrixData[i,j];
+                        count++;
+                        Console.WriteLine(Xtemp.ToString());
+
+			         }
+			    }
+            }          
+            if(y.col != 1)
+            { 
+                int count = 0;
+                Ytemp = new Matrix (y.col, 1);
+
+                for (int i = 0; i < y.row; i++)
+			    {
+                     for (int j = 0; j < y.col; j++)
+			         {         Console.WriteLine("h " + y.matrixData[i,j]);
+
+                        Ytemp.matrixData[count, 0] = y.matrixData[i,j];
+                        count++;
+                        Console.WriteLine(Ytemp.ToString());
+			         }
+			    }
+            }
+            for (int i = 0; i < Ytemp.row; i++)
+			{
+                for (int j = 0; j < Xtemp.row; j++)
+			    {
+                    temp.matrixData [j,i] = Ytemp.matrixData[i,0] * Xtemp.matrixData[j,0];
+			    }
+			}
+            return temp;
         }
+
+
+           
+
+            
+        
 
     }
 
