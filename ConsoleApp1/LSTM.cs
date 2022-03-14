@@ -132,7 +132,7 @@ namespace ConsoleApp1
             {
                 forward(i);
             }
-            backward(1);
+           // backward(1);
         }
         
 
