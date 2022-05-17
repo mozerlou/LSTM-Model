@@ -56,7 +56,7 @@ namespace ConsoleApp1
             this.row = other.row;
         }
         //Sets individual values in the matrix
-        public void SetCell(int r, int c, int val)
+        public void SetCell(int r, int c, float val)
         {
             matrixData[r, c] = val;
         }
@@ -97,6 +97,21 @@ namespace ConsoleApp1
             }
         }
 
+        public static Matrix FillWs(params Matrix[] data)
+        {
+            int rowLength = data[0].col;
+           
+            Matrix temp = new Matrix(rowLength, data.Length);
+            for (int i = 0; i < data.Length; i++)
+            {
+                for (int j  = 0; j < rowLength; j++)
+                {
+                    temp.matrixData[j,i] = data[i].matrixData[0,j];   
+                }
+            }
+            return temp;
+        }
+
         public override string ToString()
         {
             string str = "";
@@ -112,6 +127,23 @@ namespace ConsoleApp1
             return str;
         }
 
+        public bool Greaterthan (float f)
+        {
+            bool isit = true;
+          
+            for (int i = 0; i < row; i++)
+            {
+                for (int j = 0; j < col; j++)
+                {
+                    if (matrixData[i,j]<f)
+                    {
+                        isit = false;
+                        return isit;
+                    }
+                }
+            }
+            return isit;
+        }
       
         public static float operator * (Matrix a, Matrix b)
         {
@@ -119,7 +151,7 @@ namespace ConsoleApp1
         }
         public static Matrix operator +(Matrix a, Matrix b)
         {
-            return Matrix.Concatenation(a, b);
+            return Matrix.Add(a, b);
         }
         public static Matrix ToMatrix(float x)
         {
@@ -155,6 +187,60 @@ namespace ConsoleApp1
 
             return temp;
         }
+        public float Summation()
+        {
+            float total = 0; 
+            for (int i = 0; i < row; i++)
+            {
+                for (int j = 0; j < col; j++)
+                {
+                   total = total + matrixData[i, j];
+                }
+            }
+            return total;
+        }
+
+        public static  Matrix MultiplybyAValue(Matrix x, float m)
+        {
+            Matrix temp = new Matrix(x.row, x.col);
+            for (int i = 0; i < x.row; i++)
+            {
+                for (int j = 0; j < x.col; j++)
+                {
+                    temp.matrixData [i,j]= m * x.matrixData[i, j];
+                }
+            }
+
+            return temp;
+        }
+        public static Matrix Add(Matrix x, Matrix y)
+        {
+            Matrix temp = new Matrix(x.row, x.col);
+            for (int i = 0; i < x.row; i++)
+            {
+                for (int j = 0; j < x.col; j++)
+                {
+                    temp.matrixData[i, j] = x.matrixData[i, j] + y.matrixData[i, j];
+                }
+            }
+
+            return temp;
+        }
+        public static Matrix Substract(Matrix x, Matrix y)
+        {
+            Matrix temp = new Matrix(x.row, x.col);
+            for (int i = 0; i < x.row; i++)
+            {
+                for (int j = 0; j < x.col; j++)
+                {
+                    temp.matrixData[i, j] = x.matrixData[i,j] - y.matrixData[i, j];
+                }
+            }
+
+            return temp;
+        }
+
+
 
         public static Matrix Concatenation(Matrix x, Matrix y)
         {
@@ -186,7 +272,7 @@ namespace ConsoleApp1
             return temp;
         }
 
-       
+
         public static Matrix HadmardProduct(Matrix x, Matrix y)
         {
             if (x.row != y.row || x.col != y.col)
@@ -285,6 +371,7 @@ namespace ConsoleApp1
             }
             return value;
         }
+
 
         private static float DotProductAssistant (Matrix x, Matrix y)
         {
